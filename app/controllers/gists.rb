@@ -1,5 +1,5 @@
 class Gists < Application
-  # provides :xml, :yaml, :js
+  provides :json
 
   def index
     @gists = Gist.all

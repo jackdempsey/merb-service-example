@@ -7,4 +7,7 @@ class Gist
   property :url, String
   property :created_at, DateTime
 
+  def to_json
+    attributes.to_json
+  end
 end
