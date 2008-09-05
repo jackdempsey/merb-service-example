@@ -1,0 +1,12 @@
+<h1>Gists controller, edit action</h1>
+
+<p>Edit this file in <tt>app/views/gists/edit.html.erb</tt></p>
+
+<%= form_for(@gist, :action => url(:gist, @gist)) do %>
+  <p>
+    <%= submit "Update" %>
+  </p>
+<% end =%>
+
+<%= link_to 'Show', url(:gist, @gist) %> |
+<%= link_to 'Back', url(:gists) %>
