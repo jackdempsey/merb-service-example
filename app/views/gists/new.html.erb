@@ -4,6 +4,7 @@
 
 <%= form_for(@gist, :action => url(:gists) ) do %>
   <p>
+    <%= partial :form %>
     <%= submit "Create" %>
   </p>
 <% end =%>

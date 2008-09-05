@@ -8,9 +8,7 @@
 
 <% for gist in @gists %>
   <tr>
-    <td><%= link_to 'Show', url(:gist, gist) %></td>
-    <td><%= link_to 'Edit', url(:edit_gist,  gist) %></td>
-    <td><%= delete_button :gist, gist %></td>
+    <td><%= link_to gist.name, url(:edit_gist,  gist) %></td>
   </tr>
 <% end %>
 </table>

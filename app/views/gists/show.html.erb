@@ -2,6 +2,8 @@
 
 <p>Edit this file in <tt>app/views/gists/show.html.erb</tt></p>
 
+Name: <%= @gist.name %>
 
+<p>
 <%= link_to 'Edit',  url(:edit_gist,  @gist) %> |
 <%= link_to 'Back', url(:gists) %>
