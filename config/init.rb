@@ -49,7 +49,8 @@ Gem.path.unshift(Merb.root / "gems")
 # another part of your configuration relies on libraries specified
 # here.
 #
-# dependencies "RedCloth", "merb_helpers"
+dependencies "merb-assets", "merb_helpers"
+dependency "dm-validations"
 # OR
 # dependency "RedCloth", "> 3.0"
 # OR
