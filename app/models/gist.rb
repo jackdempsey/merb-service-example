@@ -1,5 +1,6 @@
 class Gist
   include DataMapper::Resource
+  include DataMapper::Serialize
 
   property :id, Integer, :serial => true
   property :name, String
@@ -7,7 +8,4 @@ class Gist
   property :url, String
   property :created_at, DateTime
 
-  def to_json
-    attributes.to_json
-  end
 end

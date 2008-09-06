@@ -50,7 +50,7 @@ Gem.path.unshift(Merb.root / "gems")
 # here.
 #
 dependencies "merb-assets", "merb_helpers"
-dependency "dm-validations"
+dependencies "dm-validations", "dm-serializer", "dm-timestamps"
 # OR
 # dependency "RedCloth", "> 3.0"
 # OR
