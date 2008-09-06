@@ -25,7 +25,7 @@ class Gists < Application
     @gist = Gist.get(params[:id])
     raise NotFound unless @gist
     if @gist.update_attributes(params[:gist]) || !@gist.dirty?
-      display @gist
+      display @gist, :status => Accepted
     else
       raise BadRequest
     end
