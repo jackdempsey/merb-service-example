@@ -10,7 +10,7 @@ development: &defaults
 
 test:
   <<:       *defaults
-  database: sample_test
+  database: service_example_test_development
 
   # repositories:
   #   repo1:
