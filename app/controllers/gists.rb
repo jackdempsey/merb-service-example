@@ -28,7 +28,12 @@ class Gists < Application
   def create
     @gist = Gist.new(params[:gist])
     if @gist.save
-      redirect url(:gist, @gist)
+      case content_type
+      when :json
+        display @gist
+      else
+        redirect url(:gist, @gist)
+      end
     else
       render :new
     end
