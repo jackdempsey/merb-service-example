@@ -6,7 +6,8 @@ describe Gists, "/index" do
     get '/gists/index.json'
   end
   
-  it "should respond to a call to /index" do
+  it "should respond successfully to a GET of /index.json" do
     do_get.should be_successful
   end
+
 end
