@@ -16,6 +16,7 @@ class Exceptions < Application
     render ''
   end
 
+  # handle OK exceptions (200)
   def ok
     render ''
   end
