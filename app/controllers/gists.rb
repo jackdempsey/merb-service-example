@@ -35,7 +35,12 @@ class Gists < Application
         redirect url(:gist, @gist)
       end
     else
-      render :new
+      case content_type
+      when :json
+        render '', :status => 400
+      else
+        render :new
+      end
     end
   end
 
