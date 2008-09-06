@@ -12,35 +12,12 @@ class Gists < Application
     display @gist
   end
 
-  def new
-    only_provides :html
-    @gist = Gist.new
-    render
-  end
-
-  def edit
-    only_provides :html
-    @gist = Gist.get(params[:id])
-    raise NotFound unless @gist
-    render
-  end
-
   def create
     @gist = Gist.new(params[:gist])
     if @gist.save
-      case content_type
-      when :json
-        display @gist
-      else
-        redirect url(:gist, @gist)
-      end
+      display @gist, :status => Created
     else
-      case content_type
-      when :json
-        render '', :status => 400
-      else
-        render :new
-      end
+      raise BadRequest
     end
   end
 
@@ -48,7 +25,7 @@ class Gists < Application
     @gist = Gist.get(params[:id])
     raise NotFound unless @gist
     if @gist.update_attributes(params[:gist]) || !@gist.dirty?
-      redirect url(:gist, @gist)
+      display @gist
     else
       raise BadRequest
     end
@@ -58,7 +35,7 @@ class Gists < Application
     @gist = Gist.get(params[:id])
     raise NotFound unless @gist
     if @gist.destroy
-      redirect url(:gist)
+      raise OK
     else
       raise BadRequest
     end
