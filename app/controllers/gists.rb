@@ -17,7 +17,7 @@ class Gists < Application
     if @gist.save
       display @gist, :status => Created
     else
-      raise BadRequest
+      raise BadRequest, errors_for(@gist)
     end
   end
 
@@ -27,7 +27,7 @@ class Gists < Application
     if @gist.update_attributes(params[:gist]) || !@gist.dirty?
       display @gist, :status => Accepted
     else
-      raise BadRequest
+      raise BadRequest, errors_for(@gist)
     end
   end
 
@@ -37,7 +37,7 @@ class Gists < Application
     if @gist.destroy
       raise OK
     else
-      raise BadRequest
+      raise BadRequest, errors_for(@gist)
     end
   end
 
