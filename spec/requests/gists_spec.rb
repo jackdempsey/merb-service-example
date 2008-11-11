@@ -15,7 +15,7 @@ describe "#show" do
   #   gist = Gist.create(:url => 'www.example.com')
   #   request("/gists/#{gist.id}.json").should be_successful
   # end
-  # 
+  # figure out why the spec below doesn't work when we comment out the one above
   it "should raise a NotFound when item is not found" do
     #request("/gists/bad_id.json").should raise_not_found
     request("/gists/bad_id.json").status.should == 404
