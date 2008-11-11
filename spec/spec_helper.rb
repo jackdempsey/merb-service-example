@@ -12,3 +12,5 @@ Spec::Runner.configure do |config|
   config.include(Merb::Test::ControllerHelper)
   config.mock_with :rr
 end
+
+::DataMapper::AutoMigrator.auto_migrate
