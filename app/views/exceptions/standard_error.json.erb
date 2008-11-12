@@ -1,0 +1,12 @@
+<%= {
+  :_type        => "InternalServerError",
+  :request_uri  => request.env['REQUEST_URI'],
+  :parameters   => params,
+  :exceptions   => @exceptions.map do |exception|
+    {
+      :name       => exception.class,
+      :message    => exception.message,
+      :backtrace  => @show_details ? exception.backtrace : exception.backtrace.first.to_a
+    }
+  end
+}.to_json %>
