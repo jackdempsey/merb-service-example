@@ -8,15 +8,35 @@ describe "#index" do
   it "should return json" do
     request("/gists.json").should have_content_type(:json)
   end
-end    
+end
 
 describe "#show" do
-  it "should display an item when found" do
-    gist = Gist.create(:url => 'www.example.com')
-    request("/gists/#{gist.id}.json").should be_successful
+  describe "successful" do
+    before do
+      gist = Gist.create(:url => 'www.example.com')
+      @request = request("/gists/#{gist.id}.json")
+    end
+
+    it "should return json" do
+      @request.should have_content_type(:json)
+    end
+
+    it "should display an item when found" do
+      @request.should be_successful
+    end
   end
 
-  it "should return a 404 missing when item is not found" do
-    request("/gists/0.json").should be_missing
+  describe "unsuccessful" do
+    before do
+      @request = request("/gists/0.json")
+    end
+
+    it "should return a 404 when an item is not found" do
+      @request.should be_missing
+    end
+
+    it "should return json" do
+      @request.should have_content_type(:json)
+    end
   end
 end
