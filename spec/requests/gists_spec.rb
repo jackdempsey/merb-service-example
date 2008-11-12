@@ -1,5 +1,7 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
+include Merb::ControllerExceptions
+
 describe "#index" do
   it "should return successfully" do
     request("/gists.json").should be_successful
@@ -14,29 +16,29 @@ describe "#show" do
   describe "successful" do
     before do
       gist = Gist.create(:url => 'www.example.com')
-      @request = request("/gists/#{gist.id}.json")
+      @response = request("/gists/#{gist.id}.json")
     end
 
     it "should return json" do
-      @request.should have_content_type(:json)
+      @response.should have_content_type(:json)
     end
 
     it "should display an item when found" do
-      @request.should be_successful
+      @response.should be_successful
     end
   end
 
   describe "unsuccessful" do
     before do
-      @request = request("/gists/0.json")
+      @response = request("/gists/0.json")
     end
 
     it "should return a 404 when an item is not found" do
-      @request.should be_missing
+      @response.should be_missing
     end
 
     it "should return json" do
-      @request.should have_content_type(:json)
+      @response.should have_content_type(:json)
     end
   end
 end
@@ -45,36 +47,88 @@ describe "#create" do
   describe "successful" do
     before do
       #curl -H "Content-Type:application/json" -d "{\"gist\":{\"url\":\"test.com\"}}" http://localhost:4000/gists.json
-      @request = request("/gists.json", :params => {:gist => {:url => 'www.example.com'}},
+      @response = request("/gists.json", :params => {:gist => {:url => 'www.example.com'}},
                                         :method => "POST") # we can't use :post; look in the code, it checks for "POST"
     end
 
     it "should render successfully" do
-      @request.should be_successful
+      @response.should be_successful
     end
 
     it "should return a 201 status" do
-      @request.status.should == 201
+      @response.status.should == Created.status
     end
 
     it "should have content type json" do
-      @request.should have_content_type(:json)
+      @response.should have_content_type(:json)
     end
   end
 
   describe "unsuccessful" do
     before do
-      @request = request("/gists.json", :params => {:gist => {:url => ''}},
+      @response = request("/gists.json", :params => {:gist => {:url => ''}},
                                         :method => "POST")
     end
 
     it "should return a BadRequest" do
-      @request.should be_client_error
+      @response.should be_client_error
     end
 
     it "should display the errors on the gist" do
-      @request.body.to_s.should =~ /Url must not be blank/
+      @response.body.to_s.should include("Url must not be blank")
+    end
+  end
+end
+
+describe "#update" do
+  describe "successful" do
+    before do
+      # create object to update
+      result = request("/gists.json", :params => {:gist => {:url => 'www.example.com'}},
+                                        :method => 'POST')
+      result_body = JSON.parse(result.body.to_s)
+
+      # send the update
+      @new_url = "#{result_body['url']}#{Time.now.to_i}"
+      @response = request("/gists/#{result_body['id']}.json", :params => {:gist => {:url => @new_url}},
+                                                           :method => 'PUT')
+      @body = JSON.parse(@response.body.to_s)
+    end
+
+    it "should return an Accepted status" do
+      @response.status.should == Accepted.status
+    end
+
+    it "should display the gist with updated attributes" do
+      @body['url'].should == @new_url
+    end
+
+    it "should have content type json" do
+      @response.should have_content_type(:json)
     end
   end
 
+  describe "unsuccessful" do
+    before do
+      # create object to update
+      result = request("/gists.json", :params => {:gist => {:url => 'www.example.com'}},
+                                      :method => 'POST')
+      result_body = JSON.parse(result.body.to_s)
+
+      # send the bad update
+      @response = request("/gists/#{result_body['id']}.json", :params => {:gist => {:url => ''}},
+                                                              :method => 'PUT')
+      @body = JSON.parse(@response.body.to_s)
+    end
+
+    it "should return a BadRequest" do
+      @response.should be_client_error
+    end
+
+    it "should display the errors" do
+      # look at standard_error.json.erb for a layout of whats displayed. That structure is why we're looking at @body['exceptions'] here
+      # and grabbing the list of exceptions to search in
+      @body['exceptions'].map {|exception| exception['message']}.should include("Url must not be blank")
+    end
+  end
 end
