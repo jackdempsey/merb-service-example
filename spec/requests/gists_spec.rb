@@ -40,3 +40,41 @@ describe "#show" do
     end
   end
 end
+
+describe "#create" do
+  describe "successful" do
+    before do
+      #curl -H "Content-Type:application/json" -d "{\"gist\":{\"url\":\"test.com\"}}" http://localhost:4000/gists.json
+      @request = request("/gists.json", :params => {:gist => {:url => 'www.example.com'}},
+                                        :method => "POST") # we can't use :post; look in the code, it checks for "POST"
+    end
+
+    it "should render successfully" do
+      @request.should be_successful
+    end
+
+    it "should return a 201 status" do
+      @request.status.should == 201
+    end
+
+    it "should have content type json" do
+      @request.should have_content_type(:json)
+    end
+  end
+
+  describe "unsuccessful" do
+    before do
+      @request = request("/gists.json", :params => {:gist => {:url => ''}},
+                                        :method => "POST")
+    end
+
+    it "should return a BadRequest" do
+      @request.should be_client_error
+    end
+
+    it "should display the errors on the gist" do
+      @request.body.to_s.should =~ /Url must not be blank/
+    end
+  end
+
+end
