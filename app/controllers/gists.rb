@@ -35,7 +35,7 @@ class Gists < Application
     @gist = Gist.get(params[:id])
     raise NotFound unless @gist
     if @gist.destroy
-      raise OK
+      render '', :status => 204 # possibly extract into something like render_successful_delete?
     else
       raise BadRequest, errors_for(@gist)
     end

@@ -33,7 +33,7 @@ describe "#show" do
       @response = request("/gists/0.json")
     end
 
-    it "should return a 404 when an item is not found" do
+    it "should return a NotFound if missing" do
       @response.should be_missing
     end
 
@@ -121,6 +121,10 @@ describe "#update" do
       @body = JSON.parse(@response.body.to_s)
     end
 
+    it "should return a NotFound if missing" do
+      pending
+    end
+
     it "should return a BadRequest" do
       @response.should be_client_error
     end
@@ -129,6 +133,42 @@ describe "#update" do
       # look at standard_error.json.erb for a layout of whats displayed. That structure is why we're looking at @body['exceptions'] here
       # and grabbing the list of exceptions to search in
       @body['exceptions'].map {|exception| exception['message']}.should include("Url must not be blank")
+    end
+  end
+end
+
+describe "#destroy" do
+  describe "successful" do
+    before do
+      # create a gist to destroy
+      result = request("/gists.json", :params => {:gist => {:url => 'www.example.com'}},
+                                      :method => 'POST')
+      result_body = JSON.parse(result.body.to_s)
+
+      # send the delete
+      @response = request("/gists/#{result_body['id']}.json", :method => 'DELETE')
+    end
+
+    it "should render a status OK" do
+      @response.status.should == NoContent.status # a successful DELETE returns a 204 and no body
+    end
+
+    it "should return an empty body" do
+      @response.should have_body('')
+    end
+  end
+
+  describe "unsuccessful" do
+    it "should return a NotFound if missing" do
+      pending
+    end
+
+    it "should return a BadRequest" do
+      pending
+    end
+
+    it "should display the errors" do
+      pending
     end
   end
 end
