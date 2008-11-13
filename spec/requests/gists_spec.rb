@@ -2,13 +2,18 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 include Merb::ControllerExceptions
 
+
 describe "#index" do
+  before do
+    @response = request("/gists.json")
+  end
+
   it "should return successfully" do
-    request("/gists.json").should be_successful
+    @response.should be_successful
   end
 
   it "should have content type json" do
-    request("/gists.json").should have_content_type(:json)
+    @response.should have_content_type(:json)
   end
 end
 
