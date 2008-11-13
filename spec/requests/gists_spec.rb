@@ -32,9 +32,7 @@ describe "#show" do
       @response = request("/gists/#{gist.id}.json")
     end
 
-    it "should display an item when found" do
-      @response.should be_successful
-    end
+    it_should_respond_with OK
 
     it_should_return :json
   end
@@ -44,9 +42,7 @@ describe "#show" do
       @response = request("/gists/0.json")
     end
 
-    it "should return a NotFound (404) if missing" do
-      @response.should be_missing
-    end
+    it_should_respond_with NotFound
 
     it_should_return :json
   end
@@ -122,15 +118,13 @@ describe "#update" do
       request("/gists/0.json", :params => {:gist => {:url => ''}},:method => 'PUT').should be_missing
     end
 
-    it "should return a BadRequest (400)" do
-      @response.should be_client_error
-    end
-
     it "should display the errors" do
       # look at standard_error.json.erb for a layout of whats displayed. That structure is why we're looking at @body['exceptions'] here
       # and grabbing the list of exceptions to search in
       @body['exceptions'].map {|exception| exception['message']}.should include("Url must not be blank")
     end
+
+    it_should_respond_with BadRequest
 
     it_should_return :json
   end
