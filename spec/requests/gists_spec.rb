@@ -1,5 +1,6 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
+# bring in the constants so we can use NotFound, etc, instead of Merb::ControllerExceptions::NotFound
 include Merb::ControllerExceptions
 
 
