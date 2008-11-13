@@ -3,19 +3,26 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 # bring in the constants so we can use NotFound, etc, instead of Merb::ControllerExceptions::NotFound
 include Merb::ControllerExceptions
 
+def it_should_return(content_type)
+  it "should have content type #{content_type}" do
+    @response.should have_content_type(content_type)
+  end
+end
+
+def it_should_respond_with(status_code)
+  it "should render a #{status_code} (#{status_code.status})" do
+    @response.status.should == status_code.status
+  end
+end
 
 describe "#index" do
   before do
     @response = request("/gists.json")
   end
 
-  it "should return successfully" do
-    @response.should be_successful
-  end
+  it_should_respond_with OK
 
-  it "should have content type json" do
-    @response.should have_content_type(:json)
-  end
+  it_should_return :json
 end
 
 describe "#show" do
@@ -29,9 +36,7 @@ describe "#show" do
       @response.should be_successful
     end
 
-    it "should have content type json" do
-      @response.should have_content_type(:json)
-    end
+    it_should_return :json
   end
 
   describe "unsuccessful" do
@@ -43,9 +48,7 @@ describe "#show" do
       @response.should be_missing
     end
 
-    it "should have content type json" do
-      @response.should have_content_type(:json)
-    end
+    it_should_return :json
   end
 end
 
@@ -57,17 +60,9 @@ describe "#create" do
                                          :method => "POST") # we can't use :post; look in the code, it checks for "POST"
     end
 
-    it "should render successfully" do
-      @response.should be_successful
-    end
+    it_should_respond_with Created
 
-    it "should return a Created (201) status" do
-      @response.status.should == Created.status
-    end
-
-    it "should have content type json" do
-      @response.should have_content_type(:json)
-    end
+    it_should_return :json
   end
 
   describe "unsuccessful" do
@@ -76,17 +71,13 @@ describe "#create" do
                                          :method => "POST")
     end
 
-    it "should return a BadRequest (400)" do
-      @response.should be_client_error
-    end
-
     it "should display the errors on the gist" do
       @response.body.to_s.should include("Url must not be blank")
     end
 
-    it "should have content type json" do
-      @response.should have_content_type(:json)
-    end
+    it_should_respond_with BadRequest
+
+    it_should_return :json
   end
 end
 
@@ -105,17 +96,13 @@ describe "#update" do
       @body = JSON.parse(@response.body.to_s)
     end
 
-    it "should return an Accepted (202) status" do
-      @response.status.should == Accepted.status
-    end
-
     it "should display the gist with updated attributes" do
       @body['url'].should == @new_url
     end
 
-    it "should have content type json" do
-      @response.should have_content_type(:json)
-    end
+    it_should_respond_with Accepted
+
+    it_should_return :json
   end
 
   describe "unsuccessful" do
@@ -145,9 +132,7 @@ describe "#update" do
       @body['exceptions'].map {|exception| exception['message']}.should include("Url must not be blank")
     end
 
-    it "should have content type json" do
-      @response.should have_content_type(:json)
-    end
+    it_should_return :json
   end
 end
 
@@ -163,17 +148,13 @@ describe "#destroy" do
       @response = request("/gists/#{result_body['id']}.json", :method => 'DELETE')
     end
 
-    it "should render a NoContent (204)" do
-      @response.status.should == NoContent.status # a successful DELETE returns a 204 and no body
-    end
-
     it "should return an empty body" do
       @response.should have_body('')
     end
 
-    it "should have content type json" do
-      @response.should have_content_type(:json)
-    end
+    it_should_respond_with NoContent
+
+    it_should_return :json
   end
 
   describe "unsuccessful" do
@@ -182,21 +163,13 @@ describe "#destroy" do
       @response = request("/gists/0.json", :method => 'DELETE')
     end
 
-    it "should return a NotFound (404) if missing" do
-      @response.should be_missing
-    end
-
-    it "should return a BadRequest (400)" do
-      @response.should be_client_error
-    end
-
     it "should display the NotFound (404) errors" do
       body = JSON.parse(@response.body.to_s)
       body['exceptions'].map {|exception| exception['message']}.should include("Merb::ControllerExceptions::NotFound")
     end
 
-    it "should have content type json" do
-      @response.should have_content_type(:json)
-    end
+    it_should_respond_with NotFound
+
+    it_should_return :json
   end
 end
