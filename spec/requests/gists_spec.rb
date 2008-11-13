@@ -3,15 +3,17 @@ require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 # bring in the constants so we can use NotFound, etc, instead of Merb::ControllerExceptions::NotFound
 include Merb::ControllerExceptions
 
-def it_should_return(content_type)
-  it "should have content type #{content_type}" do
-    @response.should have_content_type(content_type)
+def should_return(hash)
+  if hash[:content_type]
+    it "should have content type #{hash[:content_type]}" do
+      @response.should have_content_type(hash[:content_type])
+    end
   end
-end
 
-def it_should_respond_with(status_code)
-  it "should render a #{status_code} (#{status_code.status})" do
-    @response.status.should == status_code.status
+  if hash[:status_code]
+    it "should render a #{hash[:status_code]} (#{hash[:status_code].status})" do
+      @response.status.should == hash[:status_code].status
+    end
   end
 end
 
@@ -20,9 +22,7 @@ describe "#index" do
     @response = request("/gists.json")
   end
 
-  it_should_respond_with OK
-
-  it_should_return :json
+  should_return :content_type => :json, :status_code => OK
 end
 
 describe "#show" do
@@ -32,9 +32,7 @@ describe "#show" do
       @response = request("/gists/#{gist.id}.json")
     end
 
-    it_should_respond_with OK
-
-    it_should_return :json
+    should_return :content_type => :json, :status_code => OK
   end
 
   describe "unsuccessful" do
@@ -42,9 +40,7 @@ describe "#show" do
       @response = request("/gists/0.json")
     end
 
-    it_should_respond_with NotFound
-
-    it_should_return :json
+    should_return :content_type => :json, :status_code => NotFound
   end
 end
 
@@ -56,9 +52,7 @@ describe "#create" do
                                          :method => "POST") # we can't use :post; look in the code, it checks for "POST"
     end
 
-    it_should_respond_with Created
-
-    it_should_return :json
+    should_return :content_type => :json, :status_code => Created
   end
 
   describe "unsuccessful" do
@@ -71,9 +65,7 @@ describe "#create" do
       @response.body.to_s.should include("Url must not be blank")
     end
 
-    it_should_respond_with BadRequest
-
-    it_should_return :json
+    should_return :content_type => :json, :status_code => BadRequest
   end
 end
 
@@ -96,9 +88,7 @@ describe "#update" do
       @body['url'].should == @new_url
     end
 
-    it_should_respond_with Accepted
-
-    it_should_return :json
+    should_return :content_type => :json, :status_code => Accepted
   end
 
   describe "unsuccessful" do
@@ -124,9 +114,7 @@ describe "#update" do
       @body['exceptions'].map {|exception| exception['message']}.should include("Url must not be blank")
     end
 
-    it_should_respond_with BadRequest
-
-    it_should_return :json
+    should_return :content_type => :json, :status_code => BadRequest
   end
 end
 
@@ -146,9 +134,7 @@ describe "#destroy" do
       @response.should have_body('')
     end
 
-    it_should_respond_with NoContent
-
-    it_should_return :json
+    should_return :content_type => :json, :status_code => NoContent
   end
 
   describe "unsuccessful" do
@@ -162,8 +148,6 @@ describe "#destroy" do
       body['exceptions'].map {|exception| exception['message']}.should include("Merb::ControllerExceptions::NotFound")
     end
 
-    it_should_respond_with NotFound
-
-    it_should_return :json
+    should_return :content_type => :json, :status_code => NotFound
   end
 end
