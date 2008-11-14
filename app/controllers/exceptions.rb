@@ -3,16 +3,14 @@ class Exceptions < Merb::Controller
   
   # handle NotFound exceptions (404)
   def not_found
-    # look into use params[:format] if you want to display html and json
     return standard_error if content_type == :json
-    render :format => :json
+    render
   end
 
   # handle NotAcceptable exceptions (406)
   def not_acceptable
-    # look into use params[:format] if you want to display html and json
     return standard_error if content_type == :json
-    render :format => :json
+    render
   end
 
   def standard_error
